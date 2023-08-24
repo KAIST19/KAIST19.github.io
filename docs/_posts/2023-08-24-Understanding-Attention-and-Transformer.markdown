@@ -61,7 +61,9 @@ for i in range(n):
 
 $$x_i$$가 query고 $$x_j$$가 key일 때, 둘이 얼마나 관련있는가를 함수 $$\operatorname{score}(x_i, x_j)$$를 통해 알아내는 것이죠.
 
-![Attention visualization](KAIST19.github.io/assets/img/NLP/attention_visualization.png)
+<p align="center">
+<img src="{{site.baseurl | prepend: site.url}}/assets/img/NLP/attention_visualization.png" alt="Attention Visualization" width="300"/>
+</p>
 
 위의 그림은 학습한 transformer의 $$\operatorname{score}(x_i, x_j)$$를 나타낸 것입니다. 왼쪽의 token이 query로 주어졌을 때, 관련성이 높은 token이 높은 $$\operatorname{score}(x_i, x_j)$$을 알 수 있습니다.
 
@@ -147,7 +149,7 @@ $$
 # Transformer
 
 <p align="center">
-<img src="https://velog.velcdn.com/images/kaist19/post/7a4f155d-1923-400a-b710-b4d38d92553c/image.png" width="300">
+<img src="{{site.baseurl | prepend: site.url}}/assets/img/NLP/transformer_architecture.png" alt="Transformer Architecture" width="300"/>
 </p>
 
 Transformer의 기본 architecture입니다. 왼쪽 파트를 encoder, 오른쪽 파트가 decoder입니다. 그림에 보이는 $$N \times$$는 해당 구조가 $$N$$번 쌓아져 있다는 뜻인데요, transformer block라고 불리는 구조이며 encoder와 decoder의 transformer block은 구성이 살짝 다릅니다. 논문에서는 encoder와 decoder 모두 6번을 쌓았습니다. ($$N = 6$$)
@@ -156,7 +158,7 @@ Encoder는 말 그대로 text를 encode하는 부분이며, 이와 비슷한 기
 # Transformer Block
 
 <p align="center">
-<img src="https://velog.velcdn.com/images/kaist19/post/8278dec4-7113-4d8b-b93b-801722fca415/image.png" width="300">
+<img src="{{site.baseurl | prepend: site.url}}/assets/img/NLP/transformer_block.png" alt="Transformer Block" width="300"/>
 </p>
 
 ## 1. Input $$\mathbf x$$
