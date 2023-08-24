@@ -61,9 +61,7 @@ for i in range(n):
 
 $$x_i$$가 query고 $$x_j$$가 key일 때, 둘이 얼마나 관련있는가를 함수 $$\operatorname{score}(x_i, x_j)$$를 통해 알아내는 것이죠.
 
-<p align="center">
-<img src="https://velog.velcdn.com/images/kaist19/post/c96eaa78-9d7b-4b25-9825-9ee08dd96f74/image.png" width="300">
-</p>
+![Attention visualization](KAIST19.github.io/assets/img/NLP/attention_visualization.png)
 
 위의 그림은 학습한 transformer의 $$\operatorname{score}(x_i, x_j)$$를 나타낸 것입니다. 왼쪽의 token이 query로 주어졌을 때, 관련성이 높은 token이 높은 $$\operatorname{score}(x_i, x_j)$$을 알 수 있습니다.
 
