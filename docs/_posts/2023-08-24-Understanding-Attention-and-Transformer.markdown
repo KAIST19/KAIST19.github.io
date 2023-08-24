@@ -148,14 +148,18 @@ $$
 
 # Transformer
 
-![](https://velog.velcdn.com/images/kaist19/post/7a4f155d-1923-400a-b710-b4d38d92553c/image.png)
+<p align="center">
+<img src="https://velog.velcdn.com/images/kaist19/post/7a4f155d-1923-400a-b710-b4d38d92553c/image.png" width="300">
+</p>
 
 Transformer의 기본 architecture입니다. 왼쪽 파트를 encoder, 오른쪽 파트가 decoder입니다. 그림에 보이는 $$N \times$$는 해당 구조가 $$N$$번 쌓아져 있다는 뜻인데요, transformer block라고 불리는 구조이며 encoder와 decoder의 transformer block은 구성이 살짝 다릅니다. 논문에서는 encoder와 decoder 모두 6번을 쌓았습니다. ($$N = 6$$)
 Encoder는 말 그대로 text를 encode하는 부분이며, 이와 비슷한 기능을 하는 언어 모델 BERT가 이 encoder만을 가지고 설계되었습니다. 오른쪽 decoder는 text decode, 즉 생성에 관여하는 부분으로서 언어 생성 모델인 GPT가 decoder만을 가지고 만들어졌습니다.
 
 # Transformer Block
 
-![](https://velog.velcdn.com/images/kaist19/post/8278dec4-7113-4d8b-b93b-801722fca415/image.png)
+<p align="center">
+<img src="https://velog.velcdn.com/images/kaist19/post/8278dec4-7113-4d8b-b93b-801722fca415/image.png" width="300">
+</p>
 
 ## 1. Input $$\mathbf x$$
 
@@ -188,7 +192,7 @@ where
 - Query $$\mathbf Q = \mathbf x \mathbf W_i^Q$$
 - Key $$\mathbf K = \mathbf x \mathbf W_i^K$$
 - Value $$\mathbf V = \mathbf x \mathbf W_i^V$$
-- $$d_k = dim(\mathbf V)$$
+- Dimensionality $$d_k = dim(\mathbf V)$$
 
 ### Residual Connection
 
