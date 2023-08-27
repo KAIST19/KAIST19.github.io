@@ -111,7 +111,7 @@ author:
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      # url: "kaist19@kaist.ac.kr
+      url: "mailto:kaist19@kaist.ac.kr"
     - label: "Linkedin"
       icon: "fas fa-fw fa-link"
       url: "https://www.linkedin.com/in/강현-김-29ba44192/"
