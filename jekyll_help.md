@@ -7,3 +7,7 @@
 # Image
 
 <img src="{{site.baseurl | prepend: site.url}}/assets/img/           " alt="           " />
+
+# Theme
+
+https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
