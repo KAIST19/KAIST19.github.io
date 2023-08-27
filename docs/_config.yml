@@ -28,7 +28,7 @@ twitter_username: kkh_korea
 github_username: kaist19
 
 # Build settings
-theme: minimal-mistakes-jekyll
+theme: minima
 plugins:
   - jekyll-feed
 # Exclude from processing.
