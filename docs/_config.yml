@@ -104,7 +104,7 @@ analytics:
 # Site Author
 author:
   name: "KH Kim (김강현)"
-  avatar: # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar: /assets/img/id_photo.jpg # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio: "Hello! I study computer science."
   location: "Daejeon, South Korea"
   email:

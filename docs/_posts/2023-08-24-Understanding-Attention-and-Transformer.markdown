@@ -1,6 +1,5 @@
 ---
 title: "What is a transformer?"
-date: 2023-08-24 14:15:56 +0900
 categories: NLP
 ---
 
