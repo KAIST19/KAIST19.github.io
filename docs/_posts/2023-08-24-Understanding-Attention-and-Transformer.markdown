@@ -1,17 +1,17 @@
 ---
 layout: post
-title: "Attention과 Transformer 이해하기"
+title: "What is a transformer?"
 date: 2023-08-24 14:15:56 +0900
 categories: NLP
 ---
 
-Transformer는 2017년 Google이 발표한 *Attention is All You Need*라는 논문을 통해 제안된 architecture입니다. BERT, GPT 등 NLP를 공부해본 사람이라면 다 알 법한 모델들이 바로 이 transformer를 기반으로 설계되었습니다. 워낙 유명하다보니 transformer를 설명한 글이 많은데요, 이 글은 transformer가 나오게 된 배경부터 시작해 세세한 모델 디테일까지, 직관적인 이해를 돕기 위해 작성되었습니다. 처음 transformer를 공부하는 입장이라면 조금 어려울 수도 있지만, 천천히 끝까지 이해하다 보면 앞으로 NLP를 공부하는 것이 훨씬 수월해지리라 생각합니다.
+A transformer is a neural network architecture proposed by Google in 2017. It is the basis of many NLP models such as BERT, GPT, etc. This article is written to help you understand the transformer from the background to the details of the model. If you are new to the transformer, it may be a little difficult, but if you read it slowly to the end, you will find that it is much easier to study NLP in the future.
 
-# 제안 배경
+# Background
 
-Sequential data인 $$\mathbf x = (x_1, \dots, x_n)$$가 주어졌다고 해봅시다. Sequential data라고 하는 것은 기본적으로 $$x_1, \dots, x_n$$이 서로 연관되어있음을 의미합니다. 각각 독립적으로 생성된 data가 아니기 때문에, sequential data를 다루는 모델들은 데이터 간의 연관성, 동향을 잘 파악해내는게 중요합니다. 예로, token이 모여져 만들어진 text는 sequential data이며, 따라서 언어 모델은 token 사이의 연관성, 즉 문맥을 잘 파악해내야 합니다. 해당 문서에서는 text 데이터를 기준으로 설명하겠습니다.
+Consider a sequential data $$\mathbf x = (x_1, \dots, x_n)$$. Sequential data means that $$x_1, \dots, x_n$$ are related to each other. Since they are not independently generated data, models that deal with sequential data need to be able to identify the relationship and trend between data. For example, text data, which is made up of tokens, is sequential data, so language models need to be able to identify the context, or the relationship between tokens. In this document, we will explain based on text data.
 
-2017년 transformer이 세상에 나오기 전까지는 RNN과 LSTM이 sequential model을 처리하는 대표적 모델이었습니다. 두 모델 모두 $$x_1$$부터 $$x_n$$까지 순차적으로 입력을 받는데요, 모델에 $$x*i$$를 입력할 때 $$x_i$$ 뿐만 아니라 $$x_{i-1}$$을 입력해 얻어낸 출력 $$y_{i-1}$$을 같이 입력하는 방식입니다. "Recurrent"라고 불리는 이유이죠.
+Until the transformer came out in 2017, RNN and LSTM were the prevalent models for processing sequential models. Both models receive input sequentially from $$x_1$$ to $$x_n$$, but when $$x*i$$ is input to the model, not only $$x_i$$ but also the output $$y_{i-1}$$ obtained by inputting $$x_{i-1}$$ is input. This is called "Recurrent".
 
 $$
 \begin{aligned}
@@ -23,15 +23,15 @@ y_n &= \operatorname{CNN}(x_n, \operatorname{CNN}(x_{n-1}, \dots, \operatorname{
 \end{aligned}
 $$
 
-따라서 모든 $$y_{i}$$이 $$x_1, \dots, x_i$$을 고려해 출력될 수 있습니다.
+So, RNN and LSTM are good models for processing sequential data.
 
-그러나 문제가 있었는데요, sequence를 순차적으로 받아들여 순차적, 혹은 직렬적으로 처리하다보니 시간도 오래걸리고 가면 갈수록 초반에 입력받았던 값에 대한 정보를 잃어버리게 됩니다. (더 궁금하다면 CNN과 LSTM대해 알아보세요!)
+_However_, there was a problem. Since the sequence was accepted sequentially and processed sequentially or serially, it took a long time and lost information about the values entered at the beginning as it went on. (If you're curious, learn about CNN and LSTM!)
 
-Transformer는 이런 문제를 해결하기 위해 제안되었습니다. Transformer는 input $$\mathbf x = (x_1, \dots, x_n)$$을 한번에 받아 병렬적으로 처리하기 때문에 처리 속도도 빠를 뿐만 아니라 앞 전의 문맥 정보를 잃어버릴 가능성이 훨씬 적습니다. 그렇다면 $$x_1, \dots, x_n$$ 데이터 간 문맥을 어떻게 파악해낼까요? Transformer는 self-attention을 사용합니다.
+A transformer was proposed to solve this problem. Since the transformer receives the input $$\mathbf x = (x_1, \dots, x_n)$$ at once and processes it in parallel, it is not only fast, but also much less likely to lose context information from the previous one. So how does it capture the context between $$x_1, \dots, x_n$$ data? The transformer uses self-attention.
 
 # Self-Attention
 
-사용자가 검색창을 통해 어떤 query를 입력하면 key를 통해 원하는 데이터를 찾은 후 그 value를 반환하는 key-value database를 생각해봅시다.
+Consider a key-value database that returns the value after finding the desired data through the key when a user enters a query through the search bar.
 
 | Key (Title)      | Value (URL)                     |
 | ---------------- | ------------------------------- |
@@ -39,36 +39,35 @@ Transformer는 이런 문제를 해결하기 위해 제안되었습니다. Trans
 | VLOG in Zürich   | www.youtube.com/VLOG_in_zurich  |
 | ...              | ...                             |
 
-유저로부터 query로 "dog videos"가 주어진다면, 첫 번째 key인 "My dog is happy!"가 두 번째 key인 "VLOG in Zürich"보다 더 유사하기 때문에, 첫 번째 key에 대항하는 동영상을 유저에게 제공해주는 것이 적절할 것입니다.
+If a query "dog videos" is given from a user, it would be appropriate to provide the video corresponding to the first key to the user because the first key "My dog is happy!" is more similar to the query than the second key "VLOG in Zürich".
 
-Self-attention은 데이터베이스의 retrieval system에서 영감을 받았습니다. 위에서 언급한 3가지(query, key, value)가 self-attention의 구성 요소입니다.
+Self-attention was inspired by the retrieval system of the database. The three mentioned above (query, key, value) are components of self-attention.
 
 - Query $$\mathbf Q$$
 - Key $$\mathbf K$$
 - Value $$\mathbf V$$
 
-Sequential data $$\mathbf x = (x_1, \dots, x_n)$$가 주어졌을 때, self-attention은 다음과 같은 식으로 서로의 연관성을 파악합니다.
+Self-attention is a way to find the relationship between each token $$x_i$$ in the sequential data $$\mathbf x = (x_1, \dots, x_n)$$. The code below is a simple implementation of self-attention.
 
 ```python
 score = [[0] * n for _ in range(n)]
 
 for i in range(n):
-	# x_i가 query일 때,
+	# for a query x_i
 	for j in range(n):
-    	# x_j가 key일 때,
+		# for a key x_j
     	score[i][j] = score(x[i], x[j])
 ```
 
-$$x_i$$가 query고 $$x_j$$가 key일 때, 둘이 얼마나 관련있는가를 함수 $$\operatorname{score}(x_i, x_j)$$를 통해 알아내는 것이죠.
+When $$x_i$$ is query and $$x_j$$ is key, we find out how related they are through the function $$\operatorname{score}(x_i, x_j)$$.
 
 <p align="center">
 <img src="{{site.baseurl | prepend: site.url}}/assets/img/NLP/attention_visualization.png" alt="Attention Visualization" width="300"/>
 </p>
 
-위의 그림은 학습한 transformer의 $$\operatorname{score}(x_i, x_j)$$를 나타낸 것입니다. 왼쪽의 token이 query로 주어졌을 때, 관련성이 높은 token이 높은 $$\operatorname{score}(x_i, x_j)$$을 알 수 있습니다.
+The figure above illustrates the $$\operatorname{score}(x_i, x_j)$$ of the trained transformer. When the token on the left is given as a query, we can see that the token with a high relevance has a high $$\operatorname{score}(x_i, x_j)$$.
 
-그렇다면, $$\operatorname{score}(x_i, x_j)$$는 어떻게 계산할까요?
-NLP를 공부하셨다면, 내적으로 어떤 유사성을 계산해내는 것에 익숙하실 것입니다. 여기서도 마찬가지인데요, 각 token $$x_i, x_j$$에서 query $$q_i$$와 key $$k_j$$를 먼저 계산합니다.
+Then, how do we calculate $$q_i$$ and $$k_j$$? We can use a linear operator $$W^Q$$ and $$W^K$$ to get $$q_i$$ and $$k_i$$ from $$x_i$$.
 
 $$
 \begin{aligned}
@@ -77,74 +76,71 @@ k_j &= x_j W^K
 \end{aligned}
 $$
 
-$$W^Q$$와 $$W^K$$는 $$x_i$$에서 각각 $$q_i$$와 $$k_i$$를 얻을 수 있게 해주는 선형 연산자, 즉 행렬입니다.
+Here, the inner product $$q_i \cdot k_j$$ of $$q_i$$ and $$k_j$$ is $$\operatorname{score}(x_i, x_j)$$.
 
-이때 $$q_i$$와 $$k_j$$의 내적 $$q_i \cdot k_j$$이 $$\operatorname{score}(x_i, x_j)$$가 됩니다.
-따라서,
+Therefore,
 
 $$
-\operatorname{score}(x_i, x_j) = q_i \cdot k_j = q_i k_j^\intercal
+\operatorname{score}(x_i, x_j) = q_i \cdot k_j = q_i k_j^\intercal,
 $$
 
-가 되며, 모든 query $$q_1, \dots, q_n$$을 묶어 행렬 $$Q = (q_1, \dots, q_n)$$을 만들고, 모든 key $$k_1, \cdots,k_n$$을 묶어 $$K = (k_1, \dots, k_n)$$을 만들면,
+and if we combine all queries $$q_1, \dots, q_n$$ into a matrix $$Q = (q_1, \dots, q_n)$$ and all keys $$k_1, \cdots,k_n$$ into $$K = (k_1, \dots, k_n)$$, then
 
 $$
 \begin{aligned}
 \operatorname{score}(x_i, x_j) &= row_i(Q) \cdot row_j(K) \\
 &= row_i (Q) column_j(K^\intercal) \\
 &= (QK^\intercal)_{ij}
-\end{aligned}
+\end{aligned}.
 $$
 
-이 됩니다. 즉, $$\mathbf x$$로부터 계산된 $$QK^\intercal$$은 $$x_i$$가 query, $$x_j$$가 key일 때 연관성을 의미합니다.
+Here, $$QK^\intercal$$ is the relevance when $$x_i$$ is query and $$x_j$$ is key. In other words, $$QK^\intercal$$ calculated from $$\mathbf x$$ means the relevance between $$x_i$$ as query and $$x_j$$ as key.
 
-여기서 token이 존재하는 embedding 공간의 dimensionality $$d_k$$가 커짐에 따라 $$QK^\intercal$$이 무한대로 커지게 되면 컴퓨터 연산 도중 문제가 발생할 수 있으므로 $$\sqrt{d_k}$$로 나눠줍니다.
+However, if the dimensionality $$d_k$$ of the embedding space where the token exists is large, $$QK^\intercal$$ can become infinitely large as $$d_k$$ increases, which can cause problems during computer operations. Therefore, we divide it by $$\sqrt{d_k}$$.
 
 $$
 QK^\intercal \rightarrow \frac{QK^\intercal}{\sqrt{d_k}}
 $$
 
-마지막으로, "query $$q_i$$가 주어졌을 때 각 key $$k_j$$가 얼마나 연관성이 있는지"로 해석하기 위해서는 이 값을 그대로 쓰는 것 보다 $$\operatorname{softmax}$$를 통해 normalize해주는 것이 타당할 것입니다.
+To interpret "how relevant each key $$k_j$$ is when query $$q_i$$ is given", it would be more reasonable to normalize the value by $$\operatorname{softmax}$$ than to use the value as it is.
 
 $$
 QK^\intercal \rightarrow \frac{QK^\intercal}{\sqrt{d_k}} \rightarrow \operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})
 $$
 
-행렬에 $$\operatorname{softmax}$$을 취하는 것이 조금 의아할 수도 있는데, 위에서 설명한 대로 어떤 query $$q_i$$가 주어졌을 때 key $$k_j$$들과의 연관성을 normalize하는 것이 맞으므로, 행렬 $$\operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})$$의 row에 각각 $$\operatorname{softmax}$$을 취해주면 됩니다.
+translate: It may be a little strange to take $$\operatorname{softmax}$$ on a matrix, but as explained above, it is correct to normalize the relevance between query $$q_i$$ and key $$k_j$$ when a certain query $$q_i$$ is given, so take $$\operatorname{softmax}$$ on the row of the matrix $$\operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})$$.
 
-마지막으로 해당 값에 value $$V = (v_1, \dots, v_n)$$를 곱해주면 됩니다. $$v_i$$ 또한 query, key와 마찬가지로 $$v_i = x_i W^V$$를 통해 얻어지며, 따라서
+Finally, multiply the value $$V = (v_1, \dots, v_n)$$ to the normalized matrix. $$v_i$$ is also obtained by multiplying $$v_i = x_i W^V$$, so
 
 $$
-\operatorname{SelfAttention}(\mathbf x) = \operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})V
+\operatorname{SelfAttention}(\mathbf x) = \operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})V.
 $$
 
-로 정리할 수 있습니다. _Attention is All You Need_ 논문에서는 이를 **Scaled Dot-Product Attention**라고 부릅니다.
+This is the self-attention of the transformer. In the paper _Attention is All You Need_, this is called **Scaled Dot-Product Attention**.
 
 # Multi-Head Attention
 
-위에서 살펴본바와 같이 self-attention은 어떤 input $$\mathbf x$$에 대해 연산자 $$W^Q, W^K, W^V$$을 곱해 query, key, value를 각각 얻어내는 방식을 사용했습니다. 그러나, 어떤 sequential data들은 한 가지로만 연결되어 있는 것이 아니라, 여러 factor에 의해 연결되어 있는 경우가 많습니다. 예로 text의 경우, 동의어거나 품사가 같다거나 등등의 연관성이 있을 수 있겠죠.
+As mentioned above, self-attention is a way to find the relationship between each token $$x_i$$ in the sequential data $$\mathbf x = (x_1, \dots, x_n)$$. However, some sequential data are not connected by one thing, but are connected by several factors. For example, in the case of text, there may be synonyms or parts of speech.
 
-Multi-head attention은 이러한 다양한 연관성을 잡아내기 위해 같은 sequential data $$\mathbf x$$에 대해 각각 다른 $$(W^Q, W^K, W^V)$$을 가진 $$\operatorname{SelfAttention}$$을 사용합니다. $$i$$로 인덱싱 하면,
-
-$$
-\operatorname{SelfAttention}_i(\mathbf x) = \operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})V
-$$
-
-가 되며, 이 $$\operatorname{SelfAttention}_i$$에 해당하는 $$(Q, K, V)$$를 얻기 위해 해당하는 $$W_i^Q, W_i^K, W_i^V$$도 존재할 것입니다.
-
-Multi-head attention은 이 여러 $$\operatorname{SelfAttention}_i$$를 사용해 input $$\mathbf x$$로부터 얻어낸 결과를 concatenate, 즉 이어붙인 후 input과 차원을 다시 맞춰주기 위해 연산자 $$W^O$$를 통해 project하는 방식을 사용합니다. Multi-head attention에서는 $$\operatorname{SelfAttention}_i$$를 $$\operatorname{head}_i$$라고 대신 칭하며, 정리하면
+In order to capture these various relationships, multi-head attention uses $$\operatorname{SelfAttention}$$ with different $$(W^Q, W^K, W^V)$$ for the same sequential data $$\mathbf x$$. If indexed by $$i$$,
 
 $$
-\operatorname{MultiHeadAttnention}(\mathbf x) = \operatorname{Concat}(\operatorname{head}_1(\mathbf x), \dots , \operatorname{head}_h(\mathbf x)) W^O
+\operatorname{SelfAttention}_i(\mathbf x) = \operatorname{softmax}(\frac{QK^\intercal}{\sqrt{d_k}})V.
 $$
 
-가 됩니다.
+Here, $$\operatorname{SelfAttention}_i$$ is the $$i$$th $$\operatorname{SelfAttention}$$, and there will be $$W_i^Q, W_i^K, W_i^V$$ to obtain $$(Q, K, V)$$ corresponding to $$\operatorname{SelfAttention}_i$$.
+
+Multi-head attention concatenates the results obtained by using these several $$\operatorname{SelfAttention}_i$$ as input $$\mathbf x$$, that is, concatenates them, and then uses the operator $$W^O$$ to project them to match the dimension of the input again. In multi-head attention, $$\operatorname{SelfAttention}_i$$ is called $$\operatorname{head}_i$$ instead, and in summary,
+
+$$
+\operatorname{MultiHeadAttnention}(\mathbf x) = \operatorname{Concat}(\operatorname{head}_1(\mathbf x), \dots , \operatorname{head}_h(\mathbf x)) W^O.
+$$
 
 ---
 
-이제 transformer를 알아보기 위한 준비가 끝났습니다!
+Now we are ready to learn about the transformer!
 
-> 아래부터 미완성 글입니다! 계속 읽어도 무방하지만, 아직 설명이 빈약하며 추후에 positional encoding같은 내용도 추가할 예정입니다.
+> From here on, the article is incomplete! It is okay to continue reading, but the explanation is still weak, and I plan to add contents such as positional encoding in the future.
 
 # Transformer
 
@@ -152,8 +148,7 @@ $$
 <img src="{{site.baseurl | prepend: site.url}}/assets/img/NLP/transformer_architecture.png" alt="Transformer Architecture" width="300"/>
 </p>
 
-Transformer의 기본 architecture입니다. 왼쪽 파트를 encoder, 오른쪽 파트가 decoder입니다. 그림에 보이는 $$N \times$$는 해당 구조가 $$N$$번 쌓아져 있다는 뜻인데요, transformer block라고 불리는 구조이며 encoder와 decoder의 transformer block은 구성이 살짝 다릅니다. 논문에서는 encoder와 decoder 모두 6번을 쌓았습니다. ($$N = 6$$)
-Encoder는 말 그대로 text를 encode하는 부분이며, 이와 비슷한 기능을 하는 언어 모델 BERT가 이 encoder만을 가지고 설계되었습니다. 오른쪽 decoder는 text decode, 즉 생성에 관여하는 부분으로서 언어 생성 모델인 GPT가 decoder만을 가지고 만들어졌습니다.
+This is the basic architecture of the transformer. The left part is the encoder and the right part is the decoder. The $$N \times$$ in the figure means that the structure is stacked $$N$$ times, but the transformer block, which is called the transformer block, has a slightly different structure for the encoder and decoder. In the paper, both the encoder and the decoder were stacked 6 times. ($$N = 6$$)
 
 # Transformer Block
 
@@ -163,15 +158,15 @@ Encoder는 말 그대로 text를 encode하는 부분이며, 이와 비슷한 기
 
 ## 1. Input $$\mathbf x$$
 
-$$\mathbf x$$를 입력 받습니다.
+$$\mathbf x$$ is the input.
 
 ## 2. Multi-Head Attention, Add & Norm
 
-받은 입력 $$\mathbf x$$에
+To the input $$\mathbf x$$, we
 
-1. multi-head attention을 적용,
-2. residual connection을 적용,
-3. Layer Normalization을 적용합니다.
+1. apply multi-head attention,
+2. apply residual connection,
+3. apply layer normalization.
 
 $$
 \mathbf z = \operatorname{LayerNorm}(\mathbf x + \operatorname{MultiHeadAttention}(\mathbf x))
@@ -198,7 +193,7 @@ where
 
 $$\mathbf x + \operatorname{MultiHeadAttention}(\mathbf x)$$
 
-계산한 $$\operatorname{MultiHeadAttention}(\mathbf x)$$에 다시 $$\mathbf x$$를 더해주는 과정입니다. RNN에서 forward propagation & backward propagation을 할 때 발생했던 문제들을 해결해주기 위해 cell을 추가해 준 것과 비슷합니다.
+We add $$\mathbf x$$ to the calculated $$\operatorname{MultiHeadAttention}(\mathbf x)$$. This is similar to adding a cell to solve the problems that occurred when forward propagation & backward propagation were performed in RNN.
 
 ### Layer Normalization
 
