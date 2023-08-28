@@ -1,29 +1,9 @@
 ---
-title: "What is a transformer?"
+title: "Transformer Architecture"
 categories: NLP
 ---
 
 A **transformer** is a neural network architecture proposed in Google's 2017 paper _Attention is All You Need_. It is the basis of many NLP models such as BERT, GPT, etc. This article seeks to describe the transformer from the background to the details of the model.
-
-# Background
-
-Consider a sequential data $$\mathbf x = (x_1, \dots, x_n)$$. Sequential data means that $$x_1, \dots, x_n$$ are related to each other. Since they are not independently generated data, models that deal with sequential data need to be able to identify the relationship and trend between data. For example, text data, which is made up of tokens, is sequential data, so language models need to be able to identify the context, or the relationship between tokens. In this document, we will explain based on text data.
-
-Until the transformer came out in 2017, RNN and LSTM were prevalent models for processing sequential data. Both models receive input sequentially from $$x_1$$ to $$x_n$$, but when $$x_i$$ is input to the model, not only $$x_i$$ but also the output $$y_{i-1}$$ obtained by inputting $$x_{i-1}$$ is input. These models are said to be _recurrent_.
-
-$$
-\begin{aligned}
-y_1 &= \operatorname{RNN}(x_{1}, c) \\
-y_2 &= \operatorname{RNN}(x_2, y_1)= \operatorname{RNN}(x_{2}, \operatorname{RNN}(x_{1}, c)) \\
-y_3 &= \operatorname{RNN}(x_{3}, y_{2})  = \operatorname{RNN}(x_{3}, \operatorname{RNN}(x_{2}, y_{1})) = \operatorname{RNN}(x_{3}, \operatorname{RNN}(x_{2}, \operatorname{RNN}(x_{1}, c))) \\
-& \vdots \\
-y_n &= \operatorname{RNN}(x_n, \operatorname{RNN}(x_{n-1}, \dots, \operatorname{RNN}(x_1, c)\dots))
-\end{aligned}
-$$
-
-_However_, there was a problem. Since the sequence was accepted sequentially and processed sequentially or serially, it took a long time and lost information about the values entered at the beginning as it went on. (If you're curious, search for more information on RNN and LSTM)
-
-A transformer was proposed to solve this problem. Since the transformer receives the input $$\mathbf x = (x_1, \dots, x_n)$$ at once and processes it in parallel, it is not only fast, but also much less likely to lose context information from the previous one. So how does it capture the context between $$x_1, \dots, x_n$$ data? This is where the **attention mechanism** comes in.
 
 # Self-Attention
 
@@ -132,13 +112,7 @@ $$
 \operatorname{MultiHeadAttnention}(\mathbf x) = \operatorname{Concat}(\operatorname{head}_1(\mathbf x), \dots , \operatorname{head}_h(\mathbf x)) W^O.
 $$
 
----
-
-Now we are ready to learn about the transformer!
-
-> From here on, the article is incomplete! It is okay to continue reading, but the explanation is still weak, and I plan to add contents such as positional encoding in the future.
-
-# Transformer
+# Model Architecture
 
 <p align="center">
 <img src="{{site.baseurl | prepend: site.url}}/assets/img/NLP/transformer_architecture.png" alt="Transformer Architecture" width="300"/>
