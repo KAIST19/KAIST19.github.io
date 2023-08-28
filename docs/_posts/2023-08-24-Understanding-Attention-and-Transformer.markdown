@@ -3,29 +3,27 @@ title: "What is a transformer?"
 categories: NLP
 ---
 
-A **transformer** is a neural network architecture proposed by Google in 2017. It is the basis of many NLP models such as BERT, GPT, etc. This article is written to help you understand the transformer from the background to the details of the model. If you are new to the transformer, it may be a little difficult, but if you read it slowly to the end, you will find that it is much easier to study NLP in the future.
+A **transformer** is a neural network architecture proposed in the paper _Attention is All You Need_ by Google in 2017. It is the basis of many NLP models such as BERT, GPT, etc. This article is written to help you understand the transformer from the background to the details of the model. If you are new to the transformer, it may be a little difficult, but if you read it slowly to the end, you will find that it is much easier to study NLP in the future.
 
 # Background
 
 Consider a sequential data $$\mathbf x = (x_1, \dots, x_n)$$. Sequential data means that $$x_1, \dots, x_n$$ are related to each other. Since they are not independently generated data, models that deal with sequential data need to be able to identify the relationship and trend between data. For example, text data, which is made up of tokens, is sequential data, so language models need to be able to identify the context, or the relationship between tokens. In this document, we will explain based on text data.
 
-Until the transformer came out in 2017, RNN and LSTM were the prevalent models for processing sequential models. Both models receive input sequentially from $$x_1$$ to $$x_n$$, but when $$x*i$$ is input to the model, not only $$x_i$$ but also the output $$y_{i-1}$$ obtained by inputting $$x_{i-1}$$ is input. This is called "Recurrent".
+Until the transformer came out in 2017, RNN and LSTM were prevalent models for processing sequential data. Both models receive input sequentially from $$x_1$$ to $$x_n$$, but when $$x_i$$ is input to the model, not only $$x_i$$ but also the output $$y_{i-1}$$ obtained by inputting $$x_{i-1}$$ is input. These models are said to be _recurrent_.
 
 $$
 \begin{aligned}
-y_1 &= \operatorname{CNN}(x_{1}, c) \\
-y_2 &= \operatorname{CNN}(x_2, y_1)= \operatorname{CNN}(x_{2}, \operatorname{CNN}(x_{1}, c)) \\
-y_3 &= \operatorname{CNN}(x_{3}, y_{2})  = \operatorname{CNN}(x_{3}, \operatorname{CNN}(x_{2}, y_{1})) = \operatorname{CNN}(x_{3}, \operatorname{CNN}(x_{2}, \operatorname{CNN}(x_{1}, c))) \\
+y_1 &= \operatorname{RNN}(x_{1}, c) \\
+y_2 &= \operatorname{RNN}(x_2, y_1)= \operatorname{RNN}(x_{2}, \operatorname{RNN}(x_{1}, c)) \\
+y_3 &= \operatorname{RNN}(x_{3}, y_{2})  = \operatorname{RNN}(x_{3}, \operatorname{RNN}(x_{2}, y_{1})) = \operatorname{RNN}(x_{3}, \operatorname{RNN}(x_{2}, \operatorname{RNN}(x_{1}, c))) \\
 & \vdots \\
-y_n &= \operatorname{CNN}(x_n, \operatorname{CNN}(x_{n-1}, \dots, \operatorname{CNN}(x_1, c)\dots))
+y_n &= \operatorname{RNN}(x_n, \operatorname{RNN}(x_{n-1}, \dots, \operatorname{RNN}(x_1, c)\dots))
 \end{aligned}
 $$
 
-So, RNN and LSTM are good models for processing sequential data.
+_However_, there was a problem. Since the sequence was accepted sequentially and processed sequentially or serially, it took a long time and lost information about the values entered at the beginning as it went on. (If you're curious, search for more information on RNN and LSTM)
 
-_However_, there was a problem. Since the sequence was accepted sequentially and processed sequentially or serially, it took a long time and lost information about the values entered at the beginning as it went on. (If you're curious, learn about CNN and LSTM!)
-
-A transformer was proposed to solve this problem. Since the transformer receives the input $$\mathbf x = (x_1, \dots, x_n)$$ at once and processes it in parallel, it is not only fast, but also much less likely to lose context information from the previous one. So how does it capture the context between $$x_1, \dots, x_n$$ data? The transformer uses self-attention.
+A transformer was proposed to solve this problem. Since the transformer receives the input $$\mathbf x = (x_1, \dots, x_n)$$ at once and processes it in parallel, it is not only fast, but also much less likely to lose context information from the previous one. So how does it capture the context between $$x_1, \dots, x_n$$ data? This is where the **attention mechanism** comes in.
 
 # Self-Attention
 
@@ -65,7 +63,7 @@ When $$x_i$$ is query and $$x_j$$ is key, we find out how related they are throu
 
 The figure above illustrates the $$\operatorname{score}(x_i, x_j)$$ of the trained transformer. When the token on the left is given as a query, we can see that the token with a high relevance has a high $$\operatorname{score}(x_i, x_j)$$.
 
-Then, how do we calculate $$q_i$$ and $$k_j$$? We can use a linear operator $$W^Q$$ and $$W^K$$ to get $$q_i$$ and $$k_i$$ from $$x_i$$.
+Then, how do we calculate $$q_i$$ and $$k_j$$? In the transformer, we use the transformation matrix $$W^Q$$ and $$W^K$$ to get $$q_i$$ and $$k_i$$ from $$x_i$$.
 
 $$
 \begin{aligned}
