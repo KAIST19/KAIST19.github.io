@@ -158,17 +158,21 @@ $$\mathbf x$$ is the input.
 
 ## 2. Multi-Head Attention, Add & Norm
 
-To the input $$\mathbf x$$, we
+For each input $$\mathbf x$$, the operations are as follows:
 
-1. apply multi-head attention,
-2. apply residual connection,
-3. apply layer normalization.
+1. Multi-head attention,
+2. Residual connection,
+3. Layer normalization.
+
+Mathematically, it can be expressed as follows:
 
 $$
 \mathbf z = \operatorname{LayerNorm}(\mathbf x + \operatorname{MultiHeadAttention}(\mathbf x))
 $$
 
 ### Multi-Head Attention
+
+The multi-head attention mechanism is formalized as:
 
 $$
 \operatorname{MultiHeadAttnention}(\mathbf x) = \operatorname{Concat}(\operatorname{head}_1(\mathbf x), \dots , \operatorname{head}_h(\mathbf x)) \mathbf W^O
@@ -187,19 +191,23 @@ where
 
 ### Residual Connection
 
-$$\mathbf x + \operatorname{MultiHeadAttention}(\mathbf x)$$
-
-We add $$\mathbf x$$ to the calculated $$\operatorname{MultiHeadAttention}(\mathbf x)$$. This is similar to adding a cell to solve the problems that occurred when forward propagation & backward propagation were performed in RNN.
+The equation $$\mathbf x + \operatorname{MultiHeadAttention}(\mathbf x)$$ encapsulates the residual connection, serving as a corrective term to mitigate issues arising from vanishing gradients during recurrent network training.
 
 ### Layer Normalization
+
+Layer normalization is expressed as:
 
 $$\mathbf z = \operatorname{LayerNorm}(\mathbf x + \operatorname{MultiHeadAttention}(\mathbf x))$$\*\*
 
 $$\operatorname{LayerNorm}(\mathbf a) = \left( \frac{\mathbf a - \mathbb E[\mathbf a]}{\sqrt{\operatorname{Var}[\mathbf a] + \epsilon}} \right) * \gamma + \beta.$$
-$$\gamma$$ and $$\beta$$ are learnable parameters, representing **gain** and **offset**, respectively.
+
+Here, $$\gamma$$ and $$\beta$$ are learnable parameters, representing _gain_ and _offset_, respectively.
 
 ## 3. Feed Forward & Add & Norm
 
+The final output sequence $$\mathbf y$$ is obtained as:
 $$\mathbf y = \operatorname{LayerNorm}(\mathbf z + \operatorname{FFN}(\mathbf z))$$
 
 ## 4. Output $$\mathbf y$$
+
+The output sequence, $$\mathbf y$$, is the final product of the transformation block.
