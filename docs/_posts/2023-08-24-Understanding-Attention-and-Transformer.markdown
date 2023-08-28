@@ -3,7 +3,7 @@ title: "What is a transformer?"
 categories: NLP
 ---
 
-A **transformer** is a neural network architecture proposed in the paper _Attention is All You Need_ by Google in 2017. It is the basis of many NLP models such as BERT, GPT, etc. This article is written to help you understand the transformer from the background to the details of the model. If you are new to the transformer, it may be a little difficult, but if you read it slowly to the end, you will find that it is much easier to study NLP in the future.
+A **transformer** is a neural network architecture proposed in Google's 2017 paper _Attention is All You Need_. It is the basis of many NLP models such as BERT, GPT, etc. This article seeks to describe the transformer from the background to the details of the model.
 
 # Background
 
