@@ -5,7 +5,7 @@ categories: ML
 
 # Gradient Descent
 
-For a loss function $Q(w)$,
+For a loss function $Q_i(w)$,
 
 $$
 {\displaystyle w:=w-\eta \nabla Q(w)=w-{\frac {\eta }{n}}\sum _{i=1}^{n}\nabla Q_{i}(w)}
