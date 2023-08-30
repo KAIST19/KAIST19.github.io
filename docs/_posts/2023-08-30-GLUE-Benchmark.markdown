@@ -33,7 +33,7 @@ categories: NLP
 - binary classification—paraphrase or not for a pair of sentences
 - F1-score and accracy
 
-# Inference Tasks\*\* (NLI, Natural Language Inference)
+# Inference Tasks (NLI, Natural Language Inference)
 
 ## MNLI (multi-genre NLI)
 
