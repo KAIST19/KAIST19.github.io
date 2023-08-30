@@ -9,46 +9,46 @@ categories: NLP
 
 ## CoLA (Corpus of Linguistic Acceptability)
 
-- binary classification—acceptable/unacceptable
+- Binary classification—acceptable/unacceptable
 - Matthews correlation coefficient $MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}$
 
 ## SST-2 (Stanford Sentiment Treebank)
 
-- binary classification—positive/negative
+- Binary classification—positive/negative
 
 # Similarity and Paraphrase Tasks
 
 ## MRPC (Microsoft Research Paraphrase Corpus)
 
-- binary classification—paraphrase or not for a pair of sentences
+- Binary classification—paraphrase or not for a pair of sentences
 - F1-score and accuracy
 
 ## STS-B (Semantic Textual Similarity Benchmark)
 
-- annotated similarity (1–5) by human
+- Annotated similarity (1–5) by human
 - Pearson correlation coefficient and Spearman correlation coefficient
 
 ## QQP (Quora Question Pairs)
 
-- binary classification—paraphrase or not for a pair of sentences
+- Binary classification—paraphrase or not for a pair of sentences
 - F1-score and accracy
 
 # Inference Tasks (NLI, Natural Language Inference)
 
-## MNLI (multi-genre NLI)
+## MNLI (Multi-Genre NLI)
 
-- derived from SQuAD
-- labeled (entailment/contradiction/neutral)
+- Derived from SQuAD
+- Labeled (entailment/contradiction/neutral)
 
-## QNLI (question-answering NLI)
+## QNLI (Question-Answering NLI)
 
-- predicting whether the sentence contains the information to answer the question
+- Predicting whether the sentence contains the information to answer the question
 
-## RTE (recognizing textual entailment)
+## RTE (Recognizing Textual Entailment)
 
-- binary classification (entailment/not-entailment)
-- not-entailment means either neutral or contradiction
+- Binary classification (entailment/not-entailment)
+- Not-entailment means either neutral or contradiction
 
 ## WNLI (Winograd NLI)
 
-- predicting which noun a pronoun corresponds to
+- Predicting which noun a pronoun corresponds to
