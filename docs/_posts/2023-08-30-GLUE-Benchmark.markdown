@@ -37,11 +37,11 @@ categories: NLP
 
 ## MNLI (Multi-Genre NLI)
 
-- Derived from SQuAD
 - Labeled (entailment/contradiction/neutral)
 
 ## QNLI (Question-Answering NLI)
 
+- Derived from SQuAD
 - Predicting whether the sentence contains the information to answer the question
 
 ## RTE (Recognizing Textual Entailment)
